@@ -1,0 +1,24 @@
+# src/models/__init__.py
+from .base import Base
+from .entity_types import EntityType
+from .persons import Person
+from .organizations import Organization
+from .industries import Industry
+from .addresses import Address
+from .phones import Phone
+from .emails import Email
+from .hobbies import Hobby
+from .connections import Connection
+
+__all__ = [
+    'Base',
+    'EntityType',
+    'Person',
+    'Organization',
+    'Industry',
+    'Address',
+    'Phone',
+    'Email',
+    'Hobby',
+    'Connection',
+]
