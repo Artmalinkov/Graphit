@@ -11,7 +11,7 @@ class Config:
     PROJECT_ROOT = Path(__file__).parent.resolve()
 
     # === SQLite ===
-    DB_NAME = os.getenv('DB_NAME', 'graphite_db')
+    DB_NAME = os.getenv('DB_NAME', 'graphite_db.db.sqlite')
 
     # Формируем путь: папка db/ + имя файла
     DB_DIR = PROJECT_ROOT / 'db'

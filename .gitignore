@@ -16,7 +16,6 @@ alembic/versions/__pycache__/
 alembic/versions/*.pyc
 
 # Данные БД
-db/graphite_db.db
 *.sqlite
 *.sqlite3
 *.db
