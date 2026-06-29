@@ -1,6 +1,22 @@
+# Виртуальное окружение
 .venv
+
+# Среда разработки
 .idea/
+
+# Служебные файлы Python
 __pycache__/
- *.pyc
+*.pyc
+
+# Индивидуальные данные
 .env
-alembic.ini
+
+# Служебные данные Alembic
+alembic/versions/__pycache__/
+alembic/versions/*.pyc
+
+# Данные БД
+db/graphite_db.db
+*.sqlite
+*.sqlite3
+*.db

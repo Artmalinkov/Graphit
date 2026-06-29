@@ -101,25 +101,36 @@ Obsidian (.md) → Парсер → JSON → PostgreSQL → NetworkX → Pyvis/P
 ## 🚀 Быстрый старт
 
 ### 1. Клонирование репозитория
-git clone <ссылка_на_репозиторий>
+```bash
+git clone https://github.com/Artmalinkov/Graphit.git
 cd Graphite
+```
 ### 2. Создание виртуального окружения
+```bash
 python -m venv venv
 venv\Scripts\activate     # Windows
 source venv/bin/activate  # Linux/Mac
+```
 ### 3. Установка зависимостей
+```bash
 pip install -r requirements.txt
+```
+
 ### 4. Настройка переменных окружения
 Скопируйте .env.example в .env и укажите свои параметры:
-
+```txt
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=graphite_db
 DB_USER=postgres
 DB_PASSWORD=ваш_пароль
 OBSIDIAN_PATH=D:/путь/к/вашему/хранилищу
+```
+
 ### 5. Создание базы данных
+```sql
 CREATE DATABASE graphite_db;
+```
 ### 6. Запуск
 python scripts/run_parser.py   # Парсинг заметок
 python scripts/run_loader.py   # Загрузка в БД
