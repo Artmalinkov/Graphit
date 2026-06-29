@@ -132,11 +132,13 @@ OBSIDIAN_PATH=D:/путь/к/вашему/хранилищу
 CREATE DATABASE graphite_db;
 ```
 ### 6. Запуск
+```bash
 python scripts/run_parser.py   # Парсинг заметок
 python scripts/run_loader.py   # Загрузка в БД
 python scripts/run_visualizer.py  # Построение графа
-
+```
 ### Струкура проекта
+```txt
 Graphite/
 ├── README.md                 # Описание проекта
 ├── .env.example              # Шаблон переменных окружения
@@ -166,6 +168,7 @@ Graphite/
 ├── output/                   # Результаты (HTML, PNG, JSON)
 ├── docs/                     # Документация
 └── logs/                     # Логи
+```
 ---
 ## 📌 Основные объекты
 - Физические лица — люди в вашем окружении

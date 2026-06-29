@@ -7,27 +7,21 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+# config.py (фрагмент)
 class Config:
-    """Центральная конфигурация проекта Graphite"""
-
-    # ============================================================
-    # PostgreSQL
-    # ============================================================
-    DB_HOST = os.getenv('DB_HOST', 'localhost')
-    DB_PORT = os.getenv('DB_PORT', '5432')
-    DB_NAME = os.getenv('DB_NAME', 'graphite_db')
-    DB_USER = os.getenv('DB_USER', 'postgres')
-    DB_PASSWORD = os.getenv('DB_PASSWORD', '')
+    # === SQLite ===
+    DB_NAME = os.getenv('DB_NAME', 'graphite_db')  # Имя файла
+    DB_PATH = os.getenv('DB_PATH', str(PROJECT_ROOT / f'{DB_NAME}.sqlite'))
 
     @property
     def DATABASE_URL(self) -> str:
-        """URL для подключения к PostgreSQL (синхронный)"""
-        return f"postgresql://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        """URL для подключения к SQLite"""
+        return f"sqlite:///{self.DB_PATH}"
 
     @property
-    def DATABASE_URL_ASYNC(self) -> str:
-        """URL для асинхронного подключения (для будущих задач)"""
-        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+    def DATABASE_URL_SYNC(self) -> str:
+        """Синхронный URL для Alembic"""
+        return self.DATABASE_URL
 
     # ============================================================
     # Пути
