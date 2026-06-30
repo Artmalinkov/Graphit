@@ -7,7 +7,7 @@ from .base import Base
 
 
 class Telegram(Base):
-    __tablename__ = 'telegram'
+    __tablename__ = 'telegrams'
 
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(50), nullable=False, unique=True)

@@ -11,7 +11,7 @@ class Config:
     PROJECT_ROOT = Path(__file__).parent.resolve()
 
     # === SQLite ===
-    DB_NAME = os.getenv('DB_NAME', 'graphite_db.db.sqlite')
+    DB_NAME = os.getenv('DB_NAME', 'graphite_db.sqlite')
 
     # Формируем путь: папка db/ + имя файла
     DB_DIR = PROJECT_ROOT / 'db'
@@ -24,7 +24,7 @@ class Config:
     # === Пути к данным ===
     OBSIDIAN_PATH = Path(os.getenv(
         'OBSIDIAN_PATH',
-        r'D:/00.Основное/02.Obsidian/My_mind/Obsidian_socnet'
+        r'D:/00.Основное/04.Python/PythonProjects/Graphit/Obsidian_socnet'
     ))
 
     DATA_DIR = PROJECT_ROOT / 'data'
@@ -41,7 +41,6 @@ class Config:
     GRAPH_WIDTH = int(os.getenv('GRAPH_WIDTH', 1400))
     GRAPH_HEIGHT = int(os.getenv('GRAPH_HEIGHT', 900))
 
-    # === Методы ===
     @classmethod
     def ensure_directories(cls) -> None:
         """Создаёт все необходимые папки"""
