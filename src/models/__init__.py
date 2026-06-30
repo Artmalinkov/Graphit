@@ -6,6 +6,7 @@ from .organizations import Organization
 from .industries import Industry
 from .addresses import Address
 from .phones import Phone
+from .telegrams import Telegram
 from .emails import Email
 from .hobbies import Hobby
 from .connections import Connection
@@ -18,6 +19,7 @@ __all__ = [
     'Industry',
     'Address',
     'Phone',
+    'Telegram',
     'Email',
     'Hobby',
     'Connection',

@@ -94,6 +94,13 @@ class Connection(Base):
         primaryjoin='and_(Connection.target_type == "phone", Connection.target_id == Phone.id)',
         viewonly=True
     )
+    # === Связи с Telegram (только цель) ===
+    target_telegram = relationship(
+        'Telegram',
+        foreign_keys=[target_id],
+        primaryjoin='and_(Connection.target_type == "telegram", Connection.target_id == Telegram.id)',
+        viewonly=True
+    )
 
     # === Связи с Email (только цель) ===
     target_email = relationship(
