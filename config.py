@@ -13,7 +13,7 @@ class Config:
     # === SQLite ===
     DB_NAME = os.getenv('DB_NAME', 'graphite_db.sqlite')
 
-    # Формируем путь: папка db/ + имя файла
+    # Формируем путь: папка root/ + db/ + имя файла
     DB_DIR = PROJECT_ROOT / 'db'
     DB_PATH = os.getenv('DB_PATH', str(DB_DIR / f'{DB_NAME}.sqlite'))
 
@@ -33,14 +33,17 @@ class Config:
     OUTPUT_DIR = PROJECT_ROOT / 'output'
     LOGS_DIR = PROJECT_ROOT / 'logs'
 
-    # === Настройки ===
+    # === Настройки логгирования ===
     LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO')
     BATCH_SIZE = int(os.getenv('BATCH_SIZE', 100))
 
     # === Настройки визуализации ===
     GRAPH_WIDTH = int(os.getenv('GRAPH_WIDTH', 1400))
     GRAPH_HEIGHT = int(os.getenv('GRAPH_HEIGHT', 900))
+    GRAPH_BG_COLOR = os.getenv('GRAPH_BG_COLOR', '#ffffff')
+    GRAPH_FONT_COLOR = os.getenv('GRAPH_FONT_COLOR', '#000000')
 
+    # === Методы ===
     @classmethod
     def ensure_directories(cls) -> None:
         """Создаёт все необходимые папки"""
