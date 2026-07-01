@@ -1,4 +1,7 @@
 # src/models/addresses.py
+'''
+Модуль для определении модели таблицы addresses
+'''
 from sqlalchemy import Column, Integer, String, Text, Float, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime

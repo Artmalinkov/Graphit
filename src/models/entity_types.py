@@ -1,4 +1,7 @@
 # src/models/entity_types.py
+'''
+Модуль для определения модели таблицы entity_types
+'''
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime

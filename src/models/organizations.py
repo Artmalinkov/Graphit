@@ -1,4 +1,7 @@
 # src/models/organizations.py
+'''
+Модуль для определения модели таблицы organisations
+'''
 from sqlalchemy import Column, Integer, String, Text, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime

@@ -1,4 +1,7 @@
 # src/models/persons.py
+'''
+Модуль для опеределении таблицы persons в БД
+'''
 from sqlalchemy import Column, Integer, String, Text, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
