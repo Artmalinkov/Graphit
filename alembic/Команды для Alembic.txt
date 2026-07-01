@@ -1,0 +1,23 @@
+Под рукой команды Alembic
+
+=== Удаляем БД ===
+Remove-Item db/graphite_db.sqlite -Force
+
+=== Удаляем все миграции ===
+Remove-Item alembic/versions/*.py -Force
+
+=== Очищаем таблицу alembic_version в БД ===
+sqlite3 db/graphite_db.sqlite "DELETE FROM alembic_version;"
+
+=== Создание миграции автоматически ===
+alembic revision --autogenerate -m "init DB"
+
+=== Создание миграции вручную ===
+alembic revision -m "Rename person fields for SQLite compatibility"
+
+=== Применение миграции ===
+alembic upgrade head
+
+=== Откатить миграцию ===
+alembic downgrade -1
+

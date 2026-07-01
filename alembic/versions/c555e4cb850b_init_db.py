@@ -1,8 +1,8 @@
-"""Final schema: persons, organizations, industries, addresses, phones, emails, hobbies, connections
+"""init DB
 
-Revision ID: 6014c53eac02
+Revision ID: c555e4cb850b
 Revises: 
-Create Date: 2026-06-29 17:05:55.701503
+Create Date: 2026-07-01 13:09:42.413303
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '6014c53eac02'
+revision: str = 'c555e4cb850b'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -98,10 +98,10 @@ def upgrade() -> None:
     op.create_index(op.f('ix_organizations_id'), 'organizations', ['id'], unique=False)
     op.create_table('persons',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.String(length=255), nullable=False),
-    sa.Column('first_name', sa.String(length=100), nullable=True),
-    sa.Column('last_name', sa.String(length=100), nullable=True),
-    sa.Column('middle_name', sa.String(length=100), nullable=True),
+    sa.Column('full_name', sa.String(length=255), nullable=False),
+    sa.Column('family_name', sa.String(length=100), nullable=True),
+    sa.Column('name', sa.String(length=100), nullable=True),
+    sa.Column('father_name', sa.String(length=100), nullable=True),
     sa.Column('birth_date', sa.DateTime(), nullable=True),
     sa.Column('notes', sa.Text(), nullable=True),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -121,6 +121,18 @@ def upgrade() -> None:
     sa.UniqueConstraint('number')
     )
     op.create_index(op.f('ix_phones_id'), 'phones', ['id'], unique=False)
+    op.create_table('telegrams',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('username', sa.String(length=50), nullable=False),
+    sa.Column('type', sa.String(length=50), nullable=True),
+    sa.Column('is_primary', sa.Boolean(), nullable=True),
+    sa.Column('notes', sa.Text(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=True),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('username')
+    )
+    op.create_index(op.f('ix_telegrams_id'), 'telegrams', ['id'], unique=False)
     op.create_table('connections',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('source_type', sa.String(length=50), nullable=False),
@@ -152,6 +164,8 @@ def downgrade() -> None:
     op.drop_index('idx_connections_source', table_name='connections')
     op.drop_index('idx_connections_relation', table_name='connections')
     op.drop_table('connections')
+    op.drop_index(op.f('ix_telegrams_id'), table_name='telegrams')
+    op.drop_table('telegrams')
     op.drop_index(op.f('ix_phones_id'), table_name='phones')
     op.drop_table('phones')
     op.drop_index(op.f('ix_persons_id'), table_name='persons')
