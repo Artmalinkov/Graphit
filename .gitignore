@@ -19,3 +19,12 @@ alembic/versions/*.pyc
 *.sqlite
 *.sqlite3
 *.db
+
+# Дополнительно
+/.coverage
+/alembic.ini
+/alembic/env.py
+/data/processed/obsidian_dump.json
+/alembic/README
+/alembic/script.py.mako
+/Obsidian_socnet/Иванов Иван Иванович.md
