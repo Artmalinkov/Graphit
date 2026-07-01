@@ -13,7 +13,7 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QFont, QIcon, QAction
 
 from src.work_db.session import get_session
-from src.work_db.crud import get_all_persons, get_all_organizations, get_all_industries
+#from src.work_db.crud import get_all_persons, get_all_organizations, get_all_industries
 
 
 class MainWindow(QMainWindow):
