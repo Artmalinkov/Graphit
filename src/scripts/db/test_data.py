@@ -3,8 +3,9 @@
 Тестовые данные для заполнения базы
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime
 import random
+from src.models import Gender
 
 
 # ============================================================
@@ -18,6 +19,7 @@ PEOPLE = [
         "family_name": "Иванов",
         "father_name": "Иванович",
         "birth_date": datetime(1990, 1, 15),
+        "gender": Gender.MALE,
         "notes": "Любит футбол и программирование"
     },
     {
@@ -26,6 +28,7 @@ PEOPLE = [
         "family_name": "Петров",
         "father_name": "Петрович",
         "birth_date": datetime(1985, 5, 20),
+        "gender": Gender.MALE,
         "notes": "Работает в IT, увлекается фотографией"
     },
     {
@@ -34,6 +37,7 @@ PEOPLE = [
         "family_name": "Сидорова",
         "father_name": "Сергеевна",
         "birth_date": datetime(1992, 8, 10),
+        "gender": Gender.FEMALE,
         "notes": "Дизайнер, любит рисовать"
     },
     {
@@ -42,6 +46,7 @@ PEOPLE = [
         "family_name": "Козлов",
         "father_name": "Алексеевич",
         "birth_date": datetime(1988, 11, 3),
+        "gender": Gender.MALE,
         "notes": "Предприниматель, владелец бизнеса"
     },
     {
@@ -50,6 +55,7 @@ PEOPLE = [
         "family_name": "Морозова",
         "father_name": "Владимировна",
         "birth_date": datetime(1995, 3, 25),
+        "gender": Gender.FEMALE,
         "notes": "Маркетолог, увлекается SMM"
     },
     {
@@ -58,6 +64,7 @@ PEOPLE = [
         "family_name": "Соколов",
         "father_name": "Андреевич",
         "birth_date": datetime(1991, 7, 12),
+        "gender": Gender.MALE,
         "notes": "Разработчик, любит футбол"
     },
     {
@@ -66,6 +73,7 @@ PEOPLE = [
         "family_name": "Николаева",
         "father_name": "Павловна",
         "birth_date": datetime(1989, 9, 8),
+        "gender": Gender.FEMALE,
         "notes": "Менеджер, увлекается плаванием"
     },
     {
@@ -74,6 +82,7 @@ PEOPLE = [
         "family_name": "Федоров",
         "father_name": "Николаевич",
         "birth_date": datetime(1986, 12, 1),
+        "gender": Gender.MALE,
         "notes": "Директор по развитию"
     },
     {
@@ -82,6 +91,7 @@ PEOPLE = [
         "family_name": "Волкова",
         "father_name": "Александровна",
         "birth_date": datetime(1993, 6, 17),
+        "gender": Gender.FEMALE,
         "notes": "HR-специалист"
     },
     {
@@ -90,13 +100,23 @@ PEOPLE = [
         "family_name": "Зайцев",
         "father_name": "Владимирович",
         "birth_date": datetime(1987, 2, 28),
+        "gender": Gender.MALE,
         "notes": "Финансовый аналитик"
+    },
+    {
+        "full_name": "Григорьев Николай Сергеевич",
+        "name": "Николай",
+        "family_name": "Григорьев",
+        "father_name": "Сергеевич",
+        "birth_date": datetime(1994, 11, 22),
+        "gender": None,  # Пол не указан
+        "notes": "Тестировщик"
     },
 ]
 
 
 # ============================================================
-# ОРГАНИЗАЦИИ
+# ОРГАНИЗАЦИИ (без изменений)
 # ============================================================
 
 ORGANIZATIONS = [
@@ -140,14 +160,6 @@ ORGANIZATIONS = [
         "industry": "Маркетинг",
         "description": "Маркетинговое агентство"
     },
-    {
-        "name": "ТехноСтрой",
-        "full_name": "ООО «ТехноСтрой»",
-        "inn": "5566778899",
-        "website": "https://tehnostroy.ru",
-        "industry": "Строительство",
-        "description": "Строительная компания"
-    },
 ]
 
 
@@ -164,7 +176,6 @@ INDUSTRIES = [
     {"name": "Банковское дело", "description": "Банковские услуги"},
     {"name": "Медицина", "description": "Здравоохранение, медицина"},
     {"name": "Образование", "description": "Обучение, курсы, университеты"},
-    {"name": "Строительство", "description": "Строительство и архитектура"},
 ]
 
 
@@ -243,11 +254,8 @@ HOBBIES = [
 # ============================================================
 
 def get_connection_data():
-    """
-    Возвращает данные для связей между людьми
-    """
+    """Возвращает данные для связей между людьми"""
     return [
-        # (имя_источника, имя_цели, тип_связи, сила)
         ("Иванов Иван Иванович", "Петров Петр Петрович", "friend", 5),
         ("Иванов Иван Иванович", "Сидорова Анна Сергеевна", "colleague", 3),
         ("Иванов Иван Иванович", "Соколов Алексей Андреевич", "friend", 4),

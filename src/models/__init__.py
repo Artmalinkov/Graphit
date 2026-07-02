@@ -1,7 +1,7 @@
 # src/models/__init__.py
 from .base import Base
 from .entity_types import EntityType
-from .persons import Person
+from .persons import Person, Gender
 from .organizations import Organization
 from .industries import Industry
 from .addresses import Address
@@ -15,6 +15,7 @@ __all__ = [
     'Base',
     'EntityType',
     'Person',
+    'Gender',
     'Organization',
     'Industry',
     'Address',
