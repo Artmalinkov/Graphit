@@ -4,10 +4,17 @@
 '''
 from sqlalchemy import Column, Integer, String, Text, DateTime
 from sqlalchemy.orm import relationship
+from sqlalchemy import Enum as SAEnum
 from datetime import datetime
+import enum
+
 
 from .base import Base
 
+class Gender(str, enum.Enum):
+    """Перечисление возможных значений пола"""
+    MALE = 'male'
+    FEMALE = 'female'
 
 class Person(Base):
     __tablename__ = 'persons'
@@ -18,6 +25,7 @@ class Person(Base):
     name = Column(String(100), nullable=True)
     father_name = Column(String(100), nullable=True)
     birth_date = Column(DateTime, nullable=True)
+    gender = Column(SAEnum(Gender), nullable=True, default=None)
     notes = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)

@@ -10,7 +10,7 @@ Remove-Item alembic/versions/*.py -Force
 sqlite3 db/graphite_db.sqlite "DELETE FROM alembic_version;"
 
 === Создание миграции автоматически ===
-alembic revision --autogenerate -m "init DB"
+alembic revision --autogenerate -m "init db"
 
 === Создание миграции вручную ===
 alembic revision -m "Rename person fields for SQLite compatibility"
