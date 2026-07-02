@@ -13,7 +13,7 @@ from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QFont, QIcon, QAction
 
 from src.work_db.session import get_session
-#from src.work_db.crud import get_all_persons, get_all_organizations, get_all_industries
+from src.work_db.crud import get_all_persons, get_all_organizations, get_all_industries
 
 
 class MainWindow(QMainWindow):
@@ -245,9 +245,28 @@ class MainWindow(QMainWindow):
         try:
             persons = get_all_persons(self.session)
             for person in persons:
-                item = QListWidgetItem(f"{person.name}")
-                if person.first_name or person.last_name:
-                    item.setText(f"{person.name} ({person.first_name} {person.last_name or ''})")
+                # Формируем отображаемое имя
+                display_name = person.full_name or ''
+
+                # Добавляем иконку пола (если указан)
+                gender_icon = person.gender_icon if person.gender else ''
+                if gender_icon:
+                    display_name = f"{gender_icon} {display_name}"
+
+                item = QListWidgetItem(display_name)
+
+                # Добавляем дополнительную информацию
+                info = []
+                if person.birth_date:
+                    info.append(f"р. {person.birth_date.strftime('%d.%m.%Y')}")
+                if person.gender:
+                    info.append(f"пол: {person.gender_display}")
+                if person.notes:
+                    info.append(f"📝 {person.notes[:30]}...")
+
+                if info:
+                    item.setText(f"{display_name} ({' | '.join(info)})")
+
                 self.list_persons.addItem(item)
 
             if persons:
