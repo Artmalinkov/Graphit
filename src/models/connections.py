@@ -48,13 +48,15 @@ class Connection(Base):
         'Person',
         foreign_keys=[source_id],
         primaryjoin='and_(Connection.source_type == "person", Connection.source_id == Person.id)',
-        back_populates='outgoing_connections'
+        back_populates='outgoing_connections',
+        overlaps='outgoing_connections'
     )
     target_person = relationship(
         'Person',
         foreign_keys=[target_id],
         primaryjoin='and_(Connection.target_type == "person", Connection.target_id == Person.id)',
-        back_populates='incoming_connections'
+        back_populates='incoming_connections',
+        overlaps='incoming_connections'
     )
 
     # === Связи с Organization ===
@@ -62,13 +64,15 @@ class Connection(Base):
         'Organization',
         foreign_keys=[source_id],
         primaryjoin='and_(Connection.source_type == "organization", Connection.source_id == Organization.id)',
-        back_populates='outgoing_connections'
+        back_populates='outgoing_connections',
+        overlaps='outgoing_connections,source_person'
     )
     target_organization = relationship(
         'Organization',
         foreign_keys=[target_id],
         primaryjoin='and_(Connection.target_type == "organization", Connection.target_id == Organization.id)',
-        back_populates='incoming_connections'
+        back_populates='incoming_connections',
+        overlaps='incoming_connections,target_person'
     )
 
     # === Связи с Address (только цель) ===

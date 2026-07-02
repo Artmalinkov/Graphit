@@ -36,7 +36,8 @@ class Person(Base):
         foreign_keys='Connection.source_id',
         primaryjoin='and_(Connection.source_type == "person", Connection.source_id == Person.id)',
         back_populates='source_person',
-        cascade='all, delete-orphan'
+        cascade='all, delete-orphan',
+        overlaps='source_person'
     )
 
     # Входящие связи (кто-то/что-то → человек)
@@ -45,7 +46,8 @@ class Person(Base):
         foreign_keys='Connection.target_id',
         primaryjoin='and_(Connection.target_type == "person", Connection.target_id == Person.id)',
         back_populates='target_person',
-        cascade='all, delete-orphan'
+        cascade='all, delete-orphan',
+        overlaps='target_person'
     )
 
     def __repr__(self):

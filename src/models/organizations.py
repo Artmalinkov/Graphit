@@ -29,7 +29,8 @@ class Organization(Base):
         foreign_keys='Connection.source_id',
         primaryjoin='and_(Connection.source_type == "organization", Connection.source_id == Organization.id)',
         back_populates='source_organization',
-        cascade='all, delete-orphan'
+        cascade='all, delete-orphan',
+        overlaps='source_organization'
     )
 
     incoming_connections = relationship(
@@ -37,7 +38,8 @@ class Organization(Base):
         foreign_keys='Connection.target_id',
         primaryjoin='and_(Connection.target_type == "organization", Connection.target_id == Organization.id)',
         back_populates='target_organization',
-        cascade='all, delete-orphan'
+        cascade='all, delete-orphan',
+        overlaps='target_organization'
     )
 
     def __repr__(self):
