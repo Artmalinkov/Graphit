@@ -5,7 +5,7 @@
 
 import json
 from pathlib import Path
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 import networkx as nx
 
 from src.models import Person, Organization, Connection
@@ -65,11 +65,19 @@ def build_graph(
                 label=conn.relation_type,
                 strength=conn.strength or 3
             )
+        elif conn.source_type == "organization" and conn.target_type == "person":
+            source = f"org_{conn.source_id}"
+            target = f"person_{conn.target_id}"
+            G.add_edge(
+                source, target,
+                label=conn.relation_type,
+                strength=conn.strength or 3
+            )
 
     return G
 
 
-def save_graph_html(G: nx.Graph, output_path: Path = None) -> Path:
+def save_graph_html(G: nx.Graph, output_path: Optional[Path] = None) -> Path:
     """
     Сохраняет граф в HTML с использованием pyvis
 
@@ -175,14 +183,25 @@ def get_graph_info(html_path: Path) -> Dict[str, int]:
         with open(html_path, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        # Ищем данные в HTML (приблизительно)
-        # На самом деле pyvis хранит данные в JavaScript
-        # Поэтому лучше считать из NetworkX, если он доступен
+        # Пытаемся найти количество узлов и рёбер в HTML
+        import re
+        nodes_match = re.search(r'nodes:\s*\[(.*?)\]', content, re.DOTALL)
+        edges_match = re.search(r'edges:\s*\[(.*?)\]', content, re.DOTALL)
 
-        # Возвращаем заглушку
+        nodes_count = 0
+        edges_count = 0
+
+        if nodes_match:
+            nodes_text = nodes_match.group(1)
+            nodes_count = nodes_text.count('{') if nodes_text.strip() else 0
+
+        if edges_match:
+            edges_text = edges_match.group(1)
+            edges_count = edges_text.count('{') if edges_text.strip() else 0
+
         return {
-            'nodes': 0,
-            'edges': 0
+            'nodes': nodes_count,
+            'edges': edges_count
         }
     except Exception:
         return {}
