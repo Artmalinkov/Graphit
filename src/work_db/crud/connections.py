@@ -8,12 +8,15 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 from src.models import Connection
-from .base import get_by_id, delete_by_id
+from .base import BaseCRUD
+
+# Создаём экземпляр CRUD для Connection
+connection_crud = BaseCRUD(Connection)
 
 
 def get_all_connections(session: Session) -> List[Connection]:
     """Возвращает все связи"""
-    return session.query(Connection).all()
+    return connection_crud.get_all(session)
 
 
 def create_connection(
@@ -59,7 +62,7 @@ def create_connection(
 
 def get_connection_by_id(session: Session, connection_id: int) -> Optional[Connection]:
     """Находит связь по ID"""
-    return get_by_id(session, Connection, connection_id)
+    return connection_crud.get_by_id(session, connection_id)
 
 
 def get_connections_for_entity(
@@ -148,24 +151,14 @@ def update_connection(
     """
     Обновляет связь
     """
-    connection = get_connection_by_id(session, connection_id)
-    if not connection:
-        return None
-
-    updatable_fields = ['strength', 'description', 'attributes']
-    for field in updatable_fields:
-        if field in data and data[field] is not None:
-            setattr(connection, field, data[field])
-
-    session.flush()
-    return connection
+    return connection_crud.update(session, connection_id, **data)
 
 
 def delete_connection(session: Session, connection_id: int) -> bool:
     """
     Удаляет связь по ID
     """
-    return delete_by_id(session, Connection, connection_id)
+    return connection_crud.delete(session, connection_id)
 
 
 def delete_connections_for_entity(
