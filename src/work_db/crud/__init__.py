@@ -96,6 +96,7 @@ __all__ = (
     'delete_hobby',
 
     # Connections
+    'get_all_connections',
     'create_connection',
     'get_connection_by_id',
     'get_connections_for_entity',

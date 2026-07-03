@@ -1,12 +1,18 @@
 # src/work_db/__init__.py
 from .session import get_session, get_engine, SessionLocal
+from .crud import *
 
+# Добавляем Gender в экспорт
+from src.models import Gender
 
 __all__ = [
     # Session
     'get_session',
     'get_engine',
     'SessionLocal',
+
+    # Enums
+    'Gender',
 
     # CRUD
     'create_person',

@@ -8,6 +8,12 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 from src.models import Connection
+from .base import get_by_id, delete_by_id
+
+
+def get_all_connections(session: Session) -> List[Connection]:
+    """Возвращает все связи"""
+    return session.query(Connection).all()
 
 
 def create_connection(
@@ -53,7 +59,7 @@ def create_connection(
 
 def get_connection_by_id(session: Session, connection_id: int) -> Optional[Connection]:
     """Находит связь по ID"""
-    return session.query(Connection).filter_by(id=connection_id).first()
+    return get_by_id(session, Connection, connection_id)
 
 
 def get_connections_for_entity(
@@ -159,12 +165,7 @@ def delete_connection(session: Session, connection_id: int) -> bool:
     """
     Удаляет связь по ID
     """
-    connection = get_connection_by_id(session, connection_id)
-    if not connection:
-        return False
-    session.delete(connection)
-    session.flush()
-    return True
+    return delete_by_id(session, Connection, connection_id)
 
 
 def delete_connections_for_entity(

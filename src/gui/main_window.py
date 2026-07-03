@@ -3,18 +3,18 @@
 Главное окно приложения Graphite
 """
 
-import sys
 from PySide6.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QVBoxLayout,
-    QHBoxLayout, QPushButton, QLabel, QFrame,
-    QStackedWidget, QListWidget, QListWidgetItem
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QPushButton, QLabel, QFrame, QGridLayout
 )
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QFont, QIcon, QAction
+from PySide6.QtGui import QFont, QPixmap, QIcon
 
 from src.work_db.session import get_session
-from src.work_db.crud import get_all_persons, get_all_organizations, get_all_industries
-from src.models import Gender
+from src.gui.graph_window import GraphWindow
+from src.gui.persons_window import PersonsWindow
+from src.gui.organizations_window import OrganizationsWindow
+from src.gui.industries_window import IndustriesWindow
 
 
 class MainWindow(QMainWindow):
@@ -23,17 +23,17 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Graphite")
-        self.setMinimumSize(900, 650)
+        self.setMinimumSize(750, 550)
+        self.setMaximumSize(900, 650)
 
         # Инициализируем сессию БД
         self.session = get_session()
 
         # Настраиваем интерфейс
         self._setup_ui()
-        self._setup_menu()
 
-        # По умолчанию показываем список людей
-        self.show_persons()
+        # Словарь для хранения открытых окон
+        self.open_windows = {}
 
     def _setup_ui(self):
         """Настройка пользовательского интерфейса"""
@@ -43,271 +43,211 @@ class MainWindow(QMainWindow):
 
         # Главный вертикальный layout
         main_layout = QVBoxLayout(central_widget)
-        main_layout.setContentsMargins(10, 10, 10, 10)
-        main_layout.setSpacing(10)
+        main_layout.setContentsMargins(30, 30, 30, 30)
+        main_layout.setSpacing(20)
 
         # ---- Заголовок ----
-        header = QLabel("⚡ Graphite")
-        header.setAlignment(Qt.AlignCenter)
-        header.setFont(QFont("Arial", 24, QFont.Bold))
-        main_layout.addWidget(header)
+        header_layout = QVBoxLayout()
+        header_layout.setAlignment(Qt.AlignCenter)
+        header_layout.setSpacing(5)
 
-        # ---- Панель кнопок ----
-        button_frame = QFrame()
-        button_frame.setFrameShape(QFrame.StyledPanel)
-        button_frame.setStyleSheet("""
-            QFrame {
-                background-color: #f0f0f0;
-                border-radius: 8px;
-                padding: 10px;
-            }
-        """)
+        # Логотип
+        logo_label = QLabel("⚡")
+        logo_label.setAlignment(Qt.AlignCenter)
+        logo_label.setFont(QFont("Arial", 48))
+        header_layout.addWidget(logo_label)
 
-        button_layout = QHBoxLayout(button_frame)
-        button_layout.setSpacing(20)
-        button_layout.setAlignment(Qt.AlignCenter)
+        # Название
+        title = QLabel("Graphite")
+        title.setAlignment(Qt.AlignCenter)
+        title.setFont(QFont("Arial", 28, QFont.Bold))
+        header_layout.addWidget(title)
+
+        # Подзаголовок
+        subtitle = QLabel("Визуализация социальных связей")
+        subtitle.setAlignment(Qt.AlignCenter)
+        subtitle.setFont(QFont("Arial", 12))
+        subtitle.setStyleSheet("color: #666;")
+        header_layout.addWidget(subtitle)
+
+        main_layout.addLayout(header_layout)
+
+        # ---- Разделитель ----
+        line = QFrame()
+        line.setFrameShape(QFrame.HLine)
+        line.setFrameShadow(QFrame.Sunken)
+        line.setStyleSheet("background-color: #ddd;")
+        main_layout.addWidget(line)
+
+        # ---- Панель с кнопками (4 карточки в сетке 2x2) ----
+        cards_layout = QGridLayout()
+        cards_layout.setSpacing(20)
+        cards_layout.setAlignment(Qt.AlignCenter)
+
+        # Кнопка "Граф"
+        self.btn_graph = self._create_card_button(
+            "🕸️", "Граф",
+            "Визуализация связей",
+            self.open_graph_window
+        )
+        cards_layout.addWidget(self.btn_graph, 0, 0)
 
         # Кнопка "Люди"
-        self.btn_persons = QPushButton("👤 Люди")
-        self.btn_persons.setMinimumSize(150, 45)
-        self.btn_persons.setStyleSheet(self._get_button_style())
-        self.btn_persons.clicked.connect(self.show_persons)
-        button_layout.addWidget(self.btn_persons)
+        self.btn_persons = self._create_card_button(
+            "👤", "Люди",
+            "Управление людьми",
+            self.open_persons_window
+        )
+        cards_layout.addWidget(self.btn_persons, 0, 1)
 
         # Кнопка "Организации"
-        self.btn_organizations = QPushButton("🏢 Организации")
-        self.btn_organizations.setMinimumSize(150, 45)
-        self.btn_organizations.setStyleSheet(self._get_button_style())
-        self.btn_organizations.clicked.connect(self.show_organizations)
-        button_layout.addWidget(self.btn_organizations)
+        self.btn_organizations = self._create_card_button(
+            "🏢", "Организации",
+            "Управление организациями",
+            self.open_organizations_window
+        )
+        cards_layout.addWidget(self.btn_organizations, 1, 0)
 
         # Кнопка "Сферы деятельности"
-        self.btn_industries = QPushButton("📊 Сферы деятельности")
-        self.btn_industries.setMinimumSize(150, 45)
-        self.btn_industries.setStyleSheet(self._get_button_style())
-        self.btn_industries.clicked.connect(self.show_industries)
-        button_layout.addWidget(self.btn_industries)
+        self.btn_industries = self._create_card_button(
+            "📊", "Сферы деятельности",
+            "Управление сферами",
+            self.open_industries_window
+        )
+        cards_layout.addWidget(self.btn_industries, 1, 1)
 
-        main_layout.addWidget(button_frame)
+        main_layout.addLayout(cards_layout)
 
-        # ---- Стек для переключения контента ----
-        self.stacked_widget = QStackedWidget()
-        main_layout.addWidget(self.stacked_widget)
+        # ---- Строка статуса ----
+        status_layout = QHBoxLayout()
+        status_layout.setAlignment(Qt.AlignCenter)
 
-        # Создаём страницы
-        self.page_persons = self._create_persons_page()
-        self.page_organizations = self._create_organizations_page()
-        self.page_industries = self._create_industries_page()
+        self.status_label = QLabel("✅ База данных готова")
+        self.status_label.setStyleSheet("color: #4CAF50; font-size: 12px;")
+        status_layout.addWidget(self.status_label)
 
-        self.stacked_widget.addWidget(self.page_persons)
-        self.stacked_widget.addWidget(self.page_organizations)
-        self.stacked_widget.addWidget(self.page_industries)
+        main_layout.addLayout(status_layout)
 
-    def _get_button_style(self):
-        """Стиль для кнопок"""
-        return """
+    def _create_card_button(self, icon: str, title: str, description: str, callback):
+        """Создаёт карточку-кнопку"""
+        button = QPushButton()
+        button.setFixedSize(180, 200)
+        button.setStyleSheet("""
             QPushButton {
                 background-color: white;
-                border: 2px solid #4CAF50;
-                border-radius: 8px;
-                font-size: 14px;
-                font-weight: bold;
-                color: #333;
+                border: 2px solid #e0e0e0;
+                border-radius: 12px;
+                padding: 10px;
             }
             QPushButton:hover {
-                background-color: #4CAF50;
-                color: white;
+                background-color: #f5f5f5;
+                border-color: #4CAF50;
             }
             QPushButton:pressed {
-                background-color: #45a049;
-                border-color: #45a049;
-            }
-            QPushButton:checked {
-                background-color: #4CAF50;
-                color: white;
-            }
-        """
-
-    def _setup_menu(self):
-        """Настройка меню"""
-        menubar = self.menuBar()
-
-        # Меню "Файл"
-        file_menu = menubar.addMenu("&Файл")
-
-        exit_action = QAction("В&ыход", self)
-        exit_action.setShortcut("Ctrl+Q")
-        exit_action.triggered.connect(self.close)
-        file_menu.addAction(exit_action)
-
-        # Меню "Вид"
-        view_menu = menubar.addMenu("&Вид")
-
-        persons_action = QAction("&Люди", self)
-        persons_action.setShortcut("Ctrl+1")
-        persons_action.triggered.connect(self.show_persons)
-        view_menu.addAction(persons_action)
-
-        organizations_action = QAction("&Организации", self)
-        organizations_action.setShortcut("Ctrl+2")
-        organizations_action.triggered.connect(self.show_organizations)
-        view_menu.addAction(organizations_action)
-
-        industries_action = QAction("&Сферы деятельности", self)
-        industries_action.setShortcut("Ctrl+3")
-        industries_action.triggered.connect(self.show_industries)
-        view_menu.addAction(industries_action)
-
-    def _create_persons_page(self):
-        """Создаёт страницу со списком людей"""
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
-
-        title = QLabel("👤 Список людей")
-        title.setFont(QFont("Arial", 16, QFont.Bold))
-        layout.addWidget(title)
-
-        self.list_persons = QListWidget()
-        self.list_persons.setStyleSheet("""
-            QListWidget {
-                border: 1px solid #ddd;
-                border-radius: 4px;
-                padding: 5px;
-                font-size: 14px;
-            }
-            QListWidget::item {
-                padding: 8px;
-                border-bottom: 1px solid #eee;
-            }
-            QListWidget::item:hover {
                 background-color: #e8f5e9;
-            }
-            QListWidget::item:selected {
-                background-color: #4CAF50;
-                color: white;
+                border-color: #388E3C;
             }
         """)
-        layout.addWidget(self.list_persons)
+        button.clicked.connect(callback)
 
-        return widget
+        # Layout кнопки
+        layout = QVBoxLayout(button)
+        layout.setAlignment(Qt.AlignCenter)
+        layout.setSpacing(8)
 
-    def _create_organizations_page(self):
-        """Создаёт страницу со списком организаций"""
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
+        # Иконка
+        icon_label = QLabel(icon)
+        icon_label.setAlignment(Qt.AlignCenter)
+        icon_label.setFont(QFont("Arial", 48))
+        layout.addWidget(icon_label)
 
-        title = QLabel("🏢 Список организаций")
-        title.setFont(QFont("Arial", 16, QFont.Bold))
-        layout.addWidget(title)
+        # Название
+        title_label = QLabel(title)
+        title_label.setAlignment(Qt.AlignCenter)
+        title_label.setFont(QFont("Arial", 16, QFont.Bold))
+        layout.addWidget(title_label)
 
-        self.list_organizations = QListWidget()
-        self.list_organizations.setStyleSheet(self.list_persons.styleSheet())
-        layout.addWidget(self.list_organizations)
+        # Описание
+        desc_label = QLabel(description)
+        desc_label.setAlignment(Qt.AlignCenter)
+        desc_label.setFont(QFont("Arial", 10))
+        desc_label.setStyleSheet("color: #888;")
+        desc_label.setWordWrap(True)
+        layout.addWidget(desc_label)
 
-        return widget
+        # Кнопка "Открыть"
+        open_btn = QPushButton("Открыть →")
+        open_btn.setFixedSize(100, 30)
+        open_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+        """)
+        open_btn.clicked.connect(callback)
+        layout.addWidget(open_btn)
 
-    def _create_industries_page(self):
-        """Создаёт страницу со списком сфер деятельности"""
-        widget = QWidget()
-        layout = QVBoxLayout(widget)
-
-        title = QLabel("📊 Список сфер деятельности")
-        title.setFont(QFont("Arial", 16, QFont.Bold))
-        layout.addWidget(title)
-
-        self.list_industries = QListWidget()
-        self.list_industries.setStyleSheet(self.list_persons.styleSheet())
-        layout.addWidget(self.list_industries)
-
-        return widget
+        return button
 
     # ============================================================
-    # Методы для отображения данных
+    # Методы для открытия окон
     # ============================================================
 
-    def show_persons(self):
-        """Показывает список людей"""
-        self.stacked_widget.setCurrentWidget(self.page_persons)
-        self._load_persons()
+    def open_graph_window(self):
+        """Открывает окно с графом"""
+        if "graph" not in self.open_windows or not self.open_windows["graph"].isVisible():
+            window = GraphWindow(self.session)
+            window.setWindowModality(Qt.WindowModality.ApplicationModal)
+            window.show()
+            self.open_windows["graph"] = window
+        else:
+            self.open_windows["graph"].raise_()
+            self.open_windows["graph"].activateWindow()
 
-    def show_organizations(self):
-        """Показывает список организаций"""
-        self.stacked_widget.setCurrentWidget(self.page_organizations)
-        self._load_organizations()
+    def open_persons_window(self):
+        """Открывает окно со списком людей"""
+        if "persons" not in self.open_windows or not self.open_windows["persons"].isVisible():
+            window = PersonsWindow(self.session)
+            window.setWindowModality(Qt.WindowModality.ApplicationModal)
+            window.show()
+            self.open_windows["persons"] = window
+        else:
+            self.open_windows["persons"].raise_()
+            self.open_windows["persons"].activateWindow()
 
-    def show_industries(self):
-        """Показывает список сфер деятельности"""
-        self.stacked_widget.setCurrentWidget(self.page_industries)
-        self._load_industries()
+    def open_organizations_window(self):
+        """Открывает окно со списком организаций"""
+        if "organizations" not in self.open_windows or not self.open_windows["organizations"].isVisible():
+            window = OrganizationsWindow(self.session)
+            window.setWindowModality(Qt.WindowModality.ApplicationModal)
+            window.show()
+            self.open_windows["organizations"] = window
+        else:
+            self.open_windows["organizations"].raise_()
+            self.open_windows["organizations"].activateWindow()
 
-    def _load_persons(self):
-        """Загружает людей из БД"""
-        self.list_persons.clear()
-        try:
-            persons = get_all_persons(self.session)
-            for person in persons:
-                # Формируем отображаемое имя
-                display_name = person.full_name or ''
-
-                # Добавляем иконку пола (если указан)
-                gender_icon = person.gender_icon if person.gender else ''
-                if gender_icon:
-                    display_name = f"{gender_icon} {display_name}"
-
-                item = QListWidgetItem(display_name)
-
-                # Добавляем дополнительную информацию
-                info = []
-                if person.birth_date:
-                    info.append(f"р. {person.birth_date.strftime('%d.%m.%Y')}")
-                if person.gender:
-                    info.append(f"пол: {person.gender_display}")
-                if person.notes:
-                    info.append(f"📝 {person.notes[:30]}...")
-
-                if info:
-                    item.setText(f"{display_name} ({' | '.join(info)})")
-
-                self.list_persons.addItem(item)
-
-            if persons:
-                self.list_persons.addItem(f"\n📊 Всего: {len(persons)} человек")
-        except Exception as e:
-            self.list_persons.addItem(f"❌ Ошибка загрузки: {e}")
-
-    def _load_organizations(self):
-        """Загружает организации из БД"""
-        self.list_organizations.clear()
-        try:
-            organizations = get_all_organizations(self.session)
-            for org in organizations:
-                item = QListWidgetItem(f"🏢 {org.name}")
-                if org.full_name:
-                    item.setText(f"{org.name} ({org.full_name})")
-                self.list_organizations.addItem(item)
-
-            if organizations:
-                self.list_organizations.addItem(f"\n📊 Всего: {len(organizations)} организаций")
-        except Exception as e:
-            self.list_organizations.addItem(f"❌ Ошибка загрузки: {e}")
-
-    def _load_industries(self):
-        """Загружает сферы деятельности из БД"""
-        self.list_industries.clear()
-        try:
-            industries = get_all_industries(self.session)
-            for industry in industries:
-                item = QListWidgetItem(f"📊 {industry.name}")
-                if industry.description:
-                    item.setText(f"{industry.name} — {industry.description}")
-                self.list_industries.addItem(item)
-
-            if industries:
-                self.list_industries.addItem(f"\n📊 Всего: {len(industries)} сфер")
-        except Exception as e:
-            self.list_industries.addItem(f"❌ Ошибка загрузки: {e}")
+    def open_industries_window(self):
+        """Открывает окно со списком сфер деятельности"""
+        if "industries" not in self.open_windows or not self.open_windows["industries"].isVisible():
+            window = IndustriesWindow(self.session)
+            window.setWindowModality(Qt.WindowModality.ApplicationModal)
+            window.show()
+            self.open_windows["industries"] = window
+        else:
+            self.open_windows["industries"].raise_()
+            self.open_windows["industries"].activateWindow()
 
     def closeEvent(self, event):
-        """Закрывает сессию БД при закрытии окна"""
+        """Закрывает все дочерние окна и сессию БД"""
+        for window in self.open_windows.values():
+            if window.isVisible():
+                window.close()
         self.session.close()
         event.accept()
