@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Graphite")
-        self.setMinimumSize(600, 650)
+        self.setMinimumSize(600, 650)  # 👈 Увеличено до 600
 
         self.session = get_session()
 
@@ -43,8 +43,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(central_widget)
 
         self.main_layout = QVBoxLayout(central_widget)
-        self.main_layout.setContentsMargins(10, 10, 10, 10)
-        self.main_layout.setSpacing(10)
+        self.main_layout.setContentsMargins(30, 20, 30, 20)  # 👈 Увеличены отступы по бокам
+        self.main_layout.setSpacing(12)
 
         # ---- Заголовок ----
         header = QLabel("Graphite")
@@ -60,7 +60,7 @@ class MainWindow(QMainWindow):
         subtitle.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.main_layout.addWidget(subtitle)
 
-        self.main_layout.addSpacing(10)
+        self.main_layout.addSpacing(15)
 
         # ---- Стек для переключения контента ----
         self.stacked_widget = QStackedWidget()
@@ -102,16 +102,13 @@ class MainWindow(QMainWindow):
         """)
         card.clicked.connect(callback)
 
-        # Вертикальный layout — всё по центру
         layout = QVBoxLayout(card)
         layout.setSpacing(4)
         layout.setAlignment(Qt.AlignCenter)
 
-        # Заголовок (горизонтально, по центру)
         title_layout = QHBoxLayout()
         title_layout.setAlignment(Qt.AlignCenter)
         title_layout.setSpacing(10)
-
 
         title_label = QLabel(title)
         title_label.setFont(QFont("Arial", 18, QFont.Bold))
@@ -121,24 +118,24 @@ class MainWindow(QMainWindow):
 
         layout.addLayout(title_layout)
 
-
         return card
 
     def _create_small_card(self, title: str, callback):
         """
         Создаёт маленькую карточку — центрированная, растягивается,
-        ширина адаптируется под размер окна
+        БЕЗ ограничения максимальной ширины
         """
         card = QPushButton()
-        card.setMinimumHeight(60)  # 👈 Увеличено с 50 до 60
-        card.setMaximumWidth(800)
+        card.setMinimumHeight(55)
+        # Убираем ограничение ширины — карточка будет растягиваться до ширины окна
+        # card.setMaximumWidth(800)  # 👈 ЗАКОММЕНТИРОВАНО
         card.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         card.setStyleSheet("""
             QPushButton {
                 background-color: white;
                 border: 2px solid #e8e8e8;
-                border-radius: 10px;
-                padding: 10px 20px;  /* 👈 Увеличено с 8px 20px */
+                border-radius: 12px;
+                padding: 12px 20px;
                 text-align: center;
                 font-family: Arial;
             }
@@ -152,13 +149,12 @@ class MainWindow(QMainWindow):
         """)
         card.clicked.connect(callback)
 
-        # Горизонтальный layout — всё по центру
         layout = QHBoxLayout(card)
         layout.setAlignment(Qt.AlignCenter)
         layout.setSpacing(8)
 
         title_label = QLabel(title)
-        title_label.setFont(QFont("Arial", 13, QFont.Bold))  # 👈 Уменьшено с 14 до 13
+        title_label.setFont(QFont("Arial", 14, QFont.Bold))
         title_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         title_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(title_label)
@@ -171,26 +167,26 @@ class MainWindow(QMainWindow):
         widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         layout = QVBoxLayout(widget)
-        layout.setSpacing(14)
+        layout.setSpacing(12)
         layout.setAlignment(Qt.AlignCenter)
 
         # ---- Карточка "Граф" (большая) ----
         card_graph = self._create_primary_card("Граф", self.show_graph)
         layout.addWidget(card_graph)
 
-        layout.addSpacing(8)
+        layout.addSpacing(10)
 
-        # ---- Маленькие карточки (центрированы через alignment) ----
+        # ---- Маленькие карточки (БЕЗ центрирования, чтобы растягивались) ----
         card_persons = self._create_small_card("Люди", self.show_persons)
-        layout.addWidget(card_persons, alignment=Qt.AlignCenter)
+        layout.addWidget(card_persons)  # Убрал alignment=Qt.AlignCenter
 
         card_orgs = self._create_small_card("Организации", self.show_organizations)
-        layout.addWidget(card_orgs, alignment=Qt.AlignCenter)
+        layout.addWidget(card_orgs)
 
         card_industries = self._create_small_card("Сферы", self.show_industries)
-        layout.addWidget(card_industries, alignment=Qt.AlignCenter)
+        layout.addWidget(card_industries)
 
-        layout.addSpacing(8)
+        layout.addSpacing(10)
 
         # ---- Статус базы данных ----
         status_frame = QFrame()
@@ -212,9 +208,8 @@ class MainWindow(QMainWindow):
         status_label.setAlignment(Qt.AlignCenter)
         status_layout.addWidget(status_label)
 
-        layout.addWidget(status_frame, alignment=Qt.AlignCenter)
+        layout.addWidget(status_frame)
 
-        # Растягивающийся элемент
         layout.addStretch()
 
         return widget
